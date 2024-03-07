@@ -9,7 +9,7 @@ export default function NavMenu() {
     const segment = useSelectedLayoutSegment();
 
     const me = {
-        id: 'zerohch0',
+        id: 'chzzk',
     };
 
     // 자식의 하위 자식이 필요할 때
