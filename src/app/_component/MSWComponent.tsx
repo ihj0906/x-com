@@ -6,7 +6,7 @@ export const MSWComponent = () => {
         // 브라우저에서만 돌아가도록
         if (typeof window !== 'undefined') {
             if (process.env.NEXT_PUBLIC_API_MOCKING === 'enabled') {
-                // require("@/mocks/browser");
+                require('@/mocks/browser');
             }
         }
     }, []);
