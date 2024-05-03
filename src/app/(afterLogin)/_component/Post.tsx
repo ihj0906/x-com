@@ -7,25 +7,17 @@ import ActionButtons from '@/app/(afterLogin)/_component/ActionButtons';
 import PostArticle from './PostArticle';
 import { faker } from '@faker-js/faker';
 import PostImages from '@/app/(afterLogin)/_component/PostImages';
+import { Post as IPost } from '@/model/Post';
 
 dayjs.locale('ko');
 dayjs.extend(relativeTime);
 
 type Props = {
     noImage?: boolean;
+    post: IPost;
 };
-export default function Post({ noImage }: Props) {
-    const target = {
-        postId: 1,
-        User: {
-            id: 'chzzk',
-            nickname: '치지직',
-            image: '/unnamed.png',
-        },
-        content: 'X 됐다',
-        createdAt: new Date(),
-        Images: [] as any[],
-    };
+export default function Post({ noImage, post }: Props) {
+    const target = post;
     // 50% 확률
     if (Math.random() > 0.5 && !noImage) {
         target.Images.push(
