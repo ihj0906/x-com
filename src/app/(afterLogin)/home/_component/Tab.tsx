@@ -1,13 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useContext } from 'react';
 import style from './tab.module.css';
+import { TabContext } from './TabProvider';
 
 export default function Tap() {
-    const [tab, setTab] = useState('rec');
-    const onClickRec = () => {};
+    const { tab, setTab } = useContext(TabContext);
+    const onClickRec = () => {
+        setTab('rec');
+    };
 
-    const onClickFol = () => {};
+    const onClickFol = () => {
+        setTab('fol');
+    };
 
     return (
         <div className={style.homeFixed}>

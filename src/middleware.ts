@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { auth } from './auth';
+import { NextResponse } from 'next/server';
 
 export async function middleware() {
     const session = await auth();

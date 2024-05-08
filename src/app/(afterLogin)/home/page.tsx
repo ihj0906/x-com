@@ -8,10 +8,10 @@ import {
     dehydrate,
 } from '@tanstack/react-query';
 import { getPostRecommends } from './_lib/getPostRecommends';
-import PostRecommends from './_component/PostRecommends';
+import TabDecider from './_component/TabDecider';
 // import { revalidatePath, revalidateTag } from 'next/cache';
 
-export default async function Page() {
+export default async function Home() {
     const queryClient = new QueryClient();
     await queryClient.prefetchQuery({
         queryKey: ['posts', 'recommends'],
@@ -27,7 +27,7 @@ export default async function Page() {
                 <TabProvider>
                     <Tab />
                     <PostForm />
-                    <PostRecommends />
+                    <TabDecider />
                 </TabProvider>
             </HydrationBoundary>
         </main>
