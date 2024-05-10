@@ -12,7 +12,5 @@ export default function TrendSection() {
         staleTime: 60 * 1000, // fresh -> stale 단위는 밀리세컨드
         gcTime: 300 * 1000, // 기본 단위는 5분
     });
-    return data?.map(trend => {
-        return <Trend trend={trend} key={trend.tagId} />;
-    });
+    return data?.map(trend => <Trend trend={trend} key={trend.tagId} />);
 }

@@ -1,9 +1,9 @@
 'use client';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getComments } from '../_lib/getComments';
-import Post from '@/app/(afterLogin)/_component/Post';
 import { Post as IPost } from '@/model/Post';
+import { getComments } from '@/app/(afterLogin)/[username]/status/[id]/_lib/getComments';
+import Post from '@/app/(afterLogin)/_component/Post';
 
 type Props = {
     id: string;
@@ -24,10 +24,11 @@ export default function Comments({ id }: Props) {
         enabled: !!post,
     });
 
+    console.log('dddd', post);
+    console.log('cccc', data);
+
     if (post) {
-        return data?.map(post => {
-            return <Post post={post} key={post.postId} />;
-        });
+        return data?.map(post => <Post post={post} key={post.postId} />);
     }
     return null;
 }

@@ -11,12 +11,15 @@ export default function Tab() {
 
     const onClickHot = () => {
         setCurrent('hot');
-        router.replace(`/search?q=${searchParams.get('q')}`);
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete('f');
+        router.replace(`/search?${newSearchParams.toString()}`);
     };
     const onClickNew = () => {
         setCurrent('new');
-        // 지금 있는 searchParams 를 그대로 사용 그리고 & 뒤에 추가
-        router.replace(`/search?q=${searchParams.toString()}&f=live`);
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('f', 'live');
+        router.replace(`/search?${newSearchParams.toString()}`);
     };
     return (
         <div className={style.homeFixed}>

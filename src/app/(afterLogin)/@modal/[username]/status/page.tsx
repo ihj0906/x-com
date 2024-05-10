@@ -11,7 +11,7 @@ export default function Page() {
                 <h3 className={style.headerTitle}>게시하기</h3>
             </div>
             <Post />
-            <CommentForm />
+            <CommentForm id={id} />
             <div className={style.commentZone}>
                 <Post />
                 <Post />

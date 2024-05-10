@@ -13,9 +13,11 @@ import TabDecider from './_component/TabDecider';
 
 export default async function Home() {
     const queryClient = new QueryClient();
-    await queryClient.prefetchQuery({
+    // 서버쪽에서 인피니트 휠 사용 시 prefetchInfiniteQuery
+    await queryClient.prefetchInfiniteQuery({
         queryKey: ['posts', 'recommends'],
         queryFn: getPostRecommends,
+        initialPageParam: 0, // cursor 값
     });
     const dehydratedState = dehydrate(queryClient);
 

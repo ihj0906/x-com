@@ -48,20 +48,26 @@ export const handlers = [
             },
         });
     }),
-    http.get('/api/postRecommends', async ({ request }) => {
+    http.get('/api/postRecommends?cursor=0', ({ request }) => {
+        const url = new URL(request.url);
+        const cursor = parseInt(url.searchParams.get('cursor') as string) || 0;
         // await delay(3000);
         return HttpResponse.json([
             {
-                postId: 1,
+                postId: cursor + 1,
                 User: User[0],
-                content: `${1} Z.com is so marvelous. I'm gonna buy that.`,
+                content: `${
+                    cursor + 1
+                } Z.com is so marvelous. I'm gonna buy that.`,
                 Images: [{ imageId: 1, link: faker.image.urlLoremFlickr() }],
                 createdAt: generateDate(),
             },
             {
-                postId: 2,
+                postId: cursor + 2,
                 User: User[0],
-                content: `${2} Z.com is so marvelous. I'm gonna buy that.`,
+                content: `${
+                    cursor + 2
+                } Z.com is so marvelous. I'm gonna buy that.`,
                 Images: [
                     { imageId: 1, link: faker.image.urlLoremFlickr() },
                     { imageId: 2, link: faker.image.urlLoremFlickr() },
@@ -69,16 +75,20 @@ export const handlers = [
                 createdAt: generateDate(),
             },
             {
-                postId: 3,
+                postId: cursor + 3,
                 User: User[0],
-                content: `${3} Z.com is so marvelous. I'm gonna buy that.`,
+                content: `${
+                    cursor + 3
+                } Z.com is so marvelous. I'm gonna buy that.`,
                 Images: [],
                 createdAt: generateDate(),
             },
             {
-                postId: 4,
+                postId: cursor + 4,
                 User: User[0],
-                content: `${4} Z.com is so marvelous. I'm gonna buy that.`,
+                content: `${
+                    cursor + 4
+                } Z.com is so marvelous. I'm gonna buy that.`,
                 Images: [
                     { imageId: 1, link: faker.image.urlLoremFlickr() },
                     { imageId: 2, link: faker.image.urlLoremFlickr() },
@@ -88,9 +98,11 @@ export const handlers = [
                 createdAt: generateDate(),
             },
             {
-                postId: 5,
+                postId: cursor + 5,
                 User: User[0],
-                content: `${5} Z.com is so marvelous. I'm gonna buy that.`,
+                content: `${
+                    cursor + 5
+                } Z.com is so marvelous. I'm gonna buy that.`,
                 Images: [
                     { imageId: 1, link: faker.image.urlLoremFlickr() },
                     { imageId: 2, link: faker.image.urlLoremFlickr() },
@@ -284,73 +296,59 @@ export const handlers = [
                     }
                 );
             }
-
             return HttpResponse.json({
-                postId: 6,
+                postId,
                 User: User[0],
                 content: `${1} 게시글 아이디 ${postId}의 내용`,
-                Images: [{ imageId: 1, link: faker.image.urlLoremFlickr() }],
+                Images: [
+                    { imageId: 1, link: faker.image.urlLoremFlickr() },
+                    { imageId: 2, link: faker.image.urlLoremFlickr() },
+                    { imageId: 3, link: faker.image.urlLoremFlickr() },
+                ],
                 createdAt: generateDate(),
             });
         }
     ),
-    http.get(
-        '/api/users/:userId/posts/:postId/comments',
-        ({ request, params }): StrictResponse<any> => {
-            const { postId } = params;
-            return HttpResponse.json([
-                {
-                    postId: 1,
-                    User: User[0],
-                    content: `${1} 게시글 ${postId}의 답글`,
-                    Images: [
-                        { imageId: 1, link: faker.image.urlLoremFlickr() },
-                    ],
-                    createdAt: generateDate(),
-                },
-                {
-                    postId: 2,
-                    User: User[0],
-                    content: `${2} 게시글 ${postId}의 답글`,
-                    Images: [
-                        { imageId: 1, link: faker.image.urlLoremFlickr() },
-                        { imageId: 2, link: faker.image.urlLoremFlickr() },
-                    ],
-                    createdAt: generateDate(),
-                },
-                {
-                    postId: 3,
-                    User: User[0],
-                    content: `${3} 게시글 ${postId}의 답글`,
-                    Images: [],
-                    createdAt: generateDate(),
-                },
-                {
-                    postId: 4,
-                    User: User[0],
-                    content: `${4} 게시글 ${postId}의 답글`,
-                    Images: [
-                        { imageId: 1, link: faker.image.urlLoremFlickr() },
-                        { imageId: 2, link: faker.image.urlLoremFlickr() },
-                        { imageId: 3, link: faker.image.urlLoremFlickr() },
-                        { imageId: 4, link: faker.image.urlLoremFlickr() },
-                    ],
-                    createdAt: generateDate(),
-                },
-                {
-                    postId: 5,
-                    User: User[0],
-                    content: `${5} 게시글 ${postId}의 답글`,
-                    Images: [
-                        { imageId: 1, link: faker.image.urlLoremFlickr() },
-                        { imageId: 2, link: faker.image.urlLoremFlickr() },
-                        { imageId: 3, link: faker.image.urlLoremFlickr() },
-                    ],
-                    createdAt: generateDate(),
-                },
-            ]);
-        }
-    ),
+    http.get('/api/posts/:postId/comments', ({ request, params }) => {
+        const { postId } = params;
+        return HttpResponse.json([
+            {
+                postId: 1,
+                User: User[0],
+                content: `${1} 게시글 ${postId}의 답글`,
+                Images: [{ imageId: 1, link: faker.image.urlLoremFlickr() }],
+                createdAt: generateDate(),
+            },
+            {
+                postId: 2,
+                User: User[0],
+                content: `${2} 게시글 ${postId}의 답글`,
+                Images: [{ imageId: 1, link: faker.image.urlLoremFlickr() }],
+                createdAt: generateDate(),
+            },
+            {
+                postId: 3,
+                User: User[0],
+                content: `${3} 게시글 ${postId}의 답글`,
+                Images: [{ imageId: 1, link: faker.image.urlLoremFlickr() }],
+                createdAt: generateDate(),
+            },
+            {
+                postId: 4,
+                User: User[0],
+                content: `${4} 게시글 ${postId}의 답글`,
+                Images: [{ imageId: 1, link: faker.image.urlLoremFlickr() }],
+                createdAt: generateDate(),
+            },
+            {
+                postId: 5,
+                User: User[0],
+                content: `${5} 게시글 ${postId}의 답글`,
+                Images: [{ imageId: 1, link: faker.image.urlLoremFlickr() }],
+                createdAt: generateDate(),
+            },
+        ]);
+    }),
     http.get('/api/followRecommends', ({ request }) => {
         return HttpResponse.json(User);
     }),
