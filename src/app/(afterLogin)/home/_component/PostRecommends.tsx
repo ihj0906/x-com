@@ -45,7 +45,7 @@ export default function PostRecommends() {
         if (inView) {
             !isFetching && hasNextPage && fetchNextPage();
         }
-    }, [inView, !isFetching, hasNextPage, fetchNextPage]);
+    }, [inView, isFetching, hasNextPage, fetchNextPage]);
 
     // if (isPending) {
     //     return (
