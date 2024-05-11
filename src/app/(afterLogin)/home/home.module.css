@@ -9,3 +9,17 @@
     flex-direction: column;
     align-items: stretch;
 }
+
+/* 로딩 이미지 움직이는 애니메이션 */
+@keyframes rotating {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loader {
+    animation: rotating 2s linear infinite;
+}

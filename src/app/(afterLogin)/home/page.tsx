@@ -1,41 +1,29 @@
 import PostForm from '@/app/(afterLogin)/home/_component/PostForm';
 import Tab from '@/app/(afterLogin)/home/_component/Tab';
-import style from './home.module.css';
 import TabProvider from '@/app/(afterLogin)/home/_component/TabProvider';
-import {
-    HydrationBoundary,
-    QueryClient,
-    dehydrate,
-} from '@tanstack/react-query';
-import { getPostRecommends } from './_lib/getPostRecommends';
-import TabDecider from './_component/TabDecider';
+import TabDeciderSuspense from './_component/TabDeciderSuspense';
+import { Suspense } from 'react';
+import Loading from './loading';
 // import { revalidatePath, revalidateTag } from 'next/cache';
 
+// ssr 과 로딩 기능은 함께 사용할 수 없음
 export default async function Home() {
-    const queryClient = new QueryClient();
-    // 서버쪽에서 인피니트 휠 사용 시 prefetchInfiniteQuery
-    await queryClient.prefetchInfiniteQuery({
-        queryKey: ['posts', 'recommends'],
-        queryFn: getPostRecommends,
-        initialPageParam: 0, // cursor 값
-    });
-    const dehydratedState = dehydrate(queryClient);
-
-    // queryClient.getQueriesData(['posts', 'recommends']);
-
     return (
-        <main className={style.main}>
-            <HydrationBoundary state={dehydratedState}>
-                <TabProvider>
-                    <Tab />
-                    <PostForm />
-                    <TabDecider />
-                </TabProvider>
-            </HydrationBoundary>
-        </main>
+        <TabProvider>
+            <Tab />
+            <PostForm />
+            {/* 로딩이 실제로 필요한 부분만 분리 */}
+            <Suspense fallback={<Loading />}>
+                <TabDeciderSuspense />
+            </Suspense>
+        </TabProvider>
     );
 }
 
 /**
  *  Provider 내부에서만 Context 를 사용할 수 있음
  */
+
+// 1. page.tsx -> loading.tsx
+// 2. 서버Suspense -> fallback
+// 3. react-query -> isPending
