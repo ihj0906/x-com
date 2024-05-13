@@ -1,9 +1,17 @@
 'use client';
 
-import { ChangeEventHandler, FormEventHandler, useRef, useState } from 'react';
+import {
+    ChangeEventHandler,
+    FormEventHandler,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import style from './postForm.module.css';
 import { Session } from '@auth/core/types';
 import TextareaAutosize from 'react-textarea-autosize';
+import { useQueryClient } from '@tanstack/react-query';
+import { Post } from '@/model/Post';
 
 type Props = {
     me: Session | null;
@@ -14,6 +22,9 @@ export default function PostForm({ me }: Props) {
     const [preview, setPreview] = useState<
         Array<{ dataUrl: string; file: File } | null>
     >([]);
+    const queryClient = useQueryClient();
+
+    useEffect(() => {}, [queryClient]);
 
     const onSubmit: FormEventHandler = async e => {
         e.preventDefault();
@@ -22,11 +33,48 @@ export default function PostForm({ me }: Props) {
         preview.forEach(p => {
             p && formData.append('images', p.file);
         });
-        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}api/posts`, {
-            method: 'post',
-            credentials: 'include',
-            body: formData,
-        });
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`,
+                {
+                    method: 'post',
+                    credentials: 'include',
+                    body: formData,
+                }
+            );
+            if (response.status === 200) {
+                setContent('');
+                setPreview([]);
+                const newPost = await response.json();
+                queryClient.setQueryData(
+                    ['posts', 'recomments'],
+                    (prevData: { pages: Post[][] }) => {
+                        const shallow = {
+                            ...prevData,
+                            pages: [...prevData.pages],
+                        };
+                        shallow.pages[0] = [...shallow.pages[0]];
+                        prevData.pages[0].unshift(newPost);
+                        return prevData;
+                    }
+                );
+                queryClient.setQueryData(
+                    ['posts', 'followings'],
+                    (prevData: { pages: Post[][] }) => {
+                        const shallow = {
+                            ...prevData,
+                            pages: [...prevData.pages],
+                        };
+                        shallow.pages[0] = [...shallow.pages[0]];
+                        prevData.pages[0].unshift(newPost);
+                        return prevData;
+                    }
+                );
+            }
+        } catch (err) {
+            // TODO 팝업 꾸미기
+            alert('업로드 중 에러가 발생했습니다.');
+        }
     };
 
     const onChange: ChangeEventHandler<HTMLTextAreaElement> = e => {
