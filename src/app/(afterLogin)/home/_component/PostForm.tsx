@@ -24,8 +24,6 @@ export default function PostForm({ me }: Props) {
     >([]);
     const queryClient = useQueryClient();
 
-    useEffect(() => {}, [queryClient]);
-
     const onSubmit: FormEventHandler = async e => {
         e.preventDefault();
         const formData = new FormData();
