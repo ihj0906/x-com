@@ -3,6 +3,7 @@
 import { ChangeEventHandler, FormEventHandler, useRef, useState } from 'react';
 import style from './postForm.module.css';
 import { Session } from '@auth/core/types';
+import TextareaAutosize from 'react-textarea-autosize';
 
 type Props = {
     me: Session | null;
@@ -10,9 +11,22 @@ type Props = {
 export default function PostForm({ me }: Props) {
     const imageRef = useRef<HTMLInputElement>(null);
     const [content, setContent] = useState('');
+    const [preview, setPreview] = useState<
+        Array<{ dataUrl: string; file: File } | null>
+    >([]);
 
-    const onSubmit: FormEventHandler = e => {
+    const onSubmit: FormEventHandler = async e => {
         e.preventDefault();
+        const formData = new FormData();
+        formData.append('content', content);
+        preview.forEach(p => {
+            p && formData.append('images', p.file);
+        });
+        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}api/posts`, {
+            method: 'post',
+            credentials: 'include',
+            body: formData,
+        });
     };
 
     const onChange: ChangeEventHandler<HTMLTextAreaElement> = e => {
@@ -21,6 +35,34 @@ export default function PostForm({ me }: Props) {
 
     const onClickButton = () => {
         imageRef.current?.click();
+    };
+
+    const onUpload: ChangeEventHandler<HTMLInputElement> = e => {
+        e.preventDefault();
+        if (e.target.files) {
+            Array.from(e.target.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setPreview(prevPreview => {
+                        const prev = [...prevPreview];
+                        prev[index] = {
+                            dataUrl: reader.result as string,
+                            file,
+                        };
+                        return prev;
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    };
+
+    const onRemoveImage = (index: number) => () => {
+        setPreview(prePreview => {
+            const prev = [...prePreview];
+            prev[index] = null;
+            return prev;
+        });
     };
 
     return (
@@ -34,11 +76,33 @@ export default function PostForm({ me }: Props) {
                 </div>
             </div>
             <div className={style.postInputSection}>
-                <textarea
+                <TextareaAutosize
                     value={content}
                     onChange={onChange}
                     placeholder="무슨 일이 일어나고 있나요?"
                 />
+                <div style={{ display: 'flex' }}>
+                    {preview.map(
+                        (v, index) =>
+                            v && (
+                                <div
+                                    style={{ flex: 1 }}
+                                    key={index}
+                                    onClick={onRemoveImage(index)}
+                                >
+                                    <img
+                                        style={{
+                                            width: '100%',
+                                            objectFit: 'contain',
+                                            maxHeight: '100px',
+                                        }}
+                                        src={v.dataUrl as string}
+                                        alt="미리보기"
+                                    />
+                                </div>
+                            )
+                    )}
+                </div>
                 <div className={style.postButtonSection}>
                     <div className={style.footerButtons}>
                         <div className={style.footerButtonLeft}>
@@ -48,6 +112,7 @@ export default function PostForm({ me }: Props) {
                                 multiple
                                 hidden
                                 ref={imageRef}
+                                onChange={onUpload}
                             />
                             <button
                                 className={style.uploadButton}
