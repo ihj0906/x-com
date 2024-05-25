@@ -1,16 +1,10 @@
 'use client';
 
-import {
-    ChangeEventHandler,
-    FormEventHandler,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { ChangeEventHandler, FormEvent, useRef, useState } from 'react';
 import style from './postForm.module.css';
 import { Session } from '@auth/core/types';
 import TextareaAutosize from 'react-textarea-autosize';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Post } from '@/model/Post';
 
 type Props = {
@@ -24,38 +18,51 @@ export default function PostForm({ me }: Props) {
     >([]);
     const queryClient = useQueryClient();
 
-    const onSubmit: FormEventHandler = async e => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('content', content);
-        preview.forEach(p => {
-            p && formData.append('images', p.file);
-        });
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`,
-                {
-                    method: 'post',
-                    credentials: 'include',
-                    body: formData,
-                }
+    const mutation = useMutation({
+        mutationFn: async (e: FormEvent) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('content', content);
+            preview.forEach(p => {
+                p && formData.append('images', p.file);
+            });
+            return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
+                method: 'post',
+                credentials: 'include',
+                body: formData,
+            });
+        },
+        // response 는 fetch로 받은 응답
+        // variable mutate 함수의 매개변수
+        // context 는 onMutate() 함수에서 리턴 받은 값
+        async onSuccess(response, variable) {
+            const newPost = await response.json();
+            setContent('');
+            setPreview([]);
+            console.log(
+                'queryClient.getQueryData recommends>>> ',
+                queryClient.getQueryData(['posts', 'recommends'])
             );
-            if (response.status === 200) {
-                setContent('');
-                setPreview([]);
-                const newPost = await response.json();
+            console.log(
+                'queryClient.getQueryData followings>>> ',
+                queryClient.getQueryData(['posts', 'followings'])
+            );
+
+            if (queryClient.getQueryData(['posts', 'recommends'])) {
                 queryClient.setQueryData(
-                    ['posts', 'recomments'],
+                    ['posts', 'recommends'],
                     (prevData: { pages: Post[][] }) => {
                         const shallow = {
                             ...prevData,
                             pages: [...prevData.pages],
                         };
                         shallow.pages[0] = [...shallow.pages[0]];
-                        prevData.pages[0].unshift(newPost);
-                        return prevData;
+                        shallow.pages[0].unshift(newPost);
+                        return shallow;
                     }
                 );
+            }
+            if (queryClient.getQueryData(['posts', 'followings'])) {
                 queryClient.setQueryData(
                     ['posts', 'followings'],
                     (prevData: { pages: Post[][] }) => {
@@ -64,16 +71,20 @@ export default function PostForm({ me }: Props) {
                             pages: [...prevData.pages],
                         };
                         shallow.pages[0] = [...shallow.pages[0]];
-                        prevData.pages[0].unshift(newPost);
-                        return prevData;
+                        shallow.pages[0].unshift(newPost);
+                        return shallow;
                     }
                 );
             }
-        } catch (err) {
-            // TODO 팝업 꾸미기
+        },
+        onError(err) {
+            console.error('eeeee', err);
+
             alert('업로드 중 에러가 발생했습니다.');
-        }
-    };
+        },
+    });
+
+    // const onSubmit:
 
     const onChange: ChangeEventHandler<HTMLTextAreaElement> = e => {
         setContent(e.target.value);
@@ -112,7 +123,7 @@ export default function PostForm({ me }: Props) {
     };
 
     return (
-        <form className={style.postForm} onSubmit={onSubmit}>
+        <form className={style.postForm} onSubmit={mutation.mutate}>
             <div className={style.postUserSection}>
                 <div className={style.postUserImage}>
                     <img

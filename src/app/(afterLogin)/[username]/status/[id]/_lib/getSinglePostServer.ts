@@ -1,4 +1,6 @@
-export const getSinglePost = async ({
+import { cookies } from 'next/headers';
+
+export const getSinglePostServer = async ({
     queryKey,
 }: {
     queryKey: [string, string];
@@ -9,6 +11,7 @@ export const getSinglePost = async ({
             tags: ['posts', id],
         },
         credentials: 'include',
+        headers: { Cookie: cookies().toString() },
         // cache: 'no-store', // 데이터를 계속 새로 가져오도록 캐시에 저장하지 않음
     });
 

@@ -24,9 +24,6 @@ export default function Comments({ id }: Props) {
         enabled: !!post,
     });
 
-    console.log('dddd', post);
-    console.log('cccc', data);
-
     if (post) {
         return data?.map(post => <Post post={post} key={post.postId} />);
     }
