@@ -16,8 +16,20 @@ export async function generateMetadata({ params }: Props) {
         queryKey: ['users', params.username],
     });
     return {
-        title: `${user.nickname} / Z`,
+        title: `${user.nickname} (${user.id}) / Z`,
         description: `${user.nickname} (${user.id}) 프로필`,
+        // 카톡 공유용 데이터
+        openGraph: {
+            title: `${user.nickname} (${user.id}) / Z`,
+            description: `${user.nickname} (${user.id}) 프로필`,
+            images: [
+                {
+                    url: `http://z.com${user.image}`,
+                    width: 400,
+                    height: 400,
+                },
+            ],
+        },
     };
 }
 
