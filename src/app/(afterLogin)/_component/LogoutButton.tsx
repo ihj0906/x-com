@@ -27,6 +27,7 @@ export default function LogoutButton({ me }: Props) {
                 method: 'post',
                 credentials: 'include',
             });
+            router.refresh(); // 로그아웃 시 라우터 캐시 초기화
             router.replace('/');
         });
     };

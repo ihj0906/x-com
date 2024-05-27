@@ -16,6 +16,7 @@ export default function NavMenu() {
     return (
         <>
             <li>
+                {/* <Link href="/home" prefetch={true}> prefetch={true} 해당 페이지의 라우터 캐시를 5분으로 늘려줌 (기본은 30초) */}
                 <Link href="/home">
                     <div className={style.navPill}>
                         {segment === 'home' ? (

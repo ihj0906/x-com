@@ -6,14 +6,18 @@ export const getSinglePostServer = async ({
     queryKey: [string, string];
 }) => {
     const [_1, id] = queryKey;
-    const res = await fetch(`http://localhost:9090/api/posts/${id}`, {
+    const res = await fetch(`${process.env.PUBLIC_BASE_URL}/api/posts/${id}`, {
         next: {
-            tags: ['posts', id],
+            // revalidate: 3600, // 3600 = 1시간 동안 계속 같은 값을 가져옴
+            tags: ['posts', id], // revalidateTag()
         },
         credentials: 'include',
         headers: { Cookie: cookies().toString() },
         // cache: 'no-store', // 데이터를 계속 새로 가져오도록 캐시에 저장하지 않음
     });
+
+    // revalidateTag('posts'); // on demand
+    // revalidatePath('/home') // 내가 보고 있는 페이지의 캐시를 날림
 
     if (!res.ok) {
         throw new Error('Failed to fetch data');
