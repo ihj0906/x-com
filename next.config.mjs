@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // output: 'export', // static mode
     async rewrites() {
         return [
             {
                 source: '/upload/:slug',
-                destination: `${process.env.PUBLIC_BASE_URL}/upload/:slug`, // Matched parameters can be used in the destination
+                destination: 'http://localhost:9090/upload/:slug', // Matched parameters can be used in the destination
             },
         ];
     },

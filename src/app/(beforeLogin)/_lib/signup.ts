@@ -50,4 +50,5 @@ export default async (prevState: any, formData: FormData) => {
     if (shouldRedirect) {
         redirect('/home'); // try catch 문 안에서 사용하면 안됨
     }
+    return { message: null };
 };
